@@ -2,9 +2,9 @@ import requests
 import os
 import time
 import re
+from constants import API_KEY
 
 # Your Freesound API key
-API_KEY = "9cp9J7NnbQCaTnP2wiGPOp0wjHZ1Jts1yb2lDHGt"
 
 # Base URL for the Freesound API
 BASE_URL = "https://freesound.org/apiv2"
