@@ -1,4 +1,10 @@
 
+<<<<<<< HEAD
 downloaded_sounds/
 
 constants.py
+=======
+*.csv
+
+.cache
+>>>>>>> 389bbbb (added gitignore)
