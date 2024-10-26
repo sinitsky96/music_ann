@@ -19,6 +19,12 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager, requ
 def get_audio_features(track_ids):
     """
     Retrieve audio features for a list of track IDs from Spotify API.
+    
+    Args:
+        track_ids (list): A list of track IDs.
+        
+    Returns:
+        list: A list of audio features.
     """
     features = []
     for i in range(0, len(track_ids), 100):
@@ -38,6 +44,14 @@ def get_audio_features(track_ids):
 def search_tracks(query, limit, max_tracks):
     """
     Search for tracks on Spotify using a query string.
+
+    Args:
+        query (str): The query string to search for.
+        limit (int): The number of tracks to retrieve.
+        max_tracks (int): Maximum number of tracks to retrieve.
+        
+    Returns:
+        list: A list of track IDs.
     """
     track_ids = []
     offset = 0
@@ -68,6 +82,13 @@ def search_tracks(query, limit, max_tracks):
 def get_top_playlists(query, limit=10):
     """
     Search for top playlists on Spotify using a query string.
+
+    Args:
+        query (str): The query string to search for.
+        limit (int): The number of playlists to retrieve.
+        
+    Returns:
+        list: A list of playlists.
     """
     playlists = []
     retries = 3
@@ -86,6 +107,12 @@ def get_top_playlists(query, limit=10):
 def get_tracks_from_playlist(playlist_id):
     """
     Retrieve all track IDs from a Spotify playlist.
+
+    Args:
+        playlist_id (str): The ID of the playlist to retrieve tracks from.
+        
+    Returns:
+        list: A list of track IDs.
     """
     track_ids = []
     retries = 3
@@ -104,6 +131,10 @@ def get_tracks_from_playlist(playlist_id):
 def process_genre_songs(genre_key, max_tracks=100):
     """
     Process songs for a specific genre and its subgenres.
+
+    Args:
+        genre_key (str): The key for the genre to process.
+        max_tracks (int): Maximum number of tracks to process for the genre.
     """
     if genre_key not in GENRE_MAP:
         logging.error(f"Genre '{genre_key}' not found in GENRE_MAP")
@@ -163,13 +194,17 @@ def process_genre_songs(genre_key, max_tracks=100):
 def process_playlists(playlist_type="top hits", limit=10):
     """
     Process top playlists, collecting audio features for their tracks.
+
+    Args:
+        playlist_type (str): Type of playlist to process.
+        limit (int): Number of playlists to process.
     """
     top_playlists = get_top_playlists(playlist_type, limit=limit)
     
     with open('data/playlist_songs_features.csv', mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow([
-            'playlist_name', 'track_id', 'track_name', 'artist', 'danceability', 'energy', 'key', 
+            'playlist_name', 'track_id', 'track_name', 'artist', 'genre', 'danceability', 'energy', 'key', 
             'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 
             'valence', 'tempo', 'duration_ms', 'time_signature', 'lyrics'
         ])
@@ -186,6 +221,10 @@ def process_playlists(playlist_type="top hits", limit=10):
                     while retries > 0:
                         try:
                             track = sp.track(features['id'])
+                            artist_id = track['artists'][0]['id']
+                            artist = sp.artist(artist_id)
+                            # Take only the first genre or 'unknown' if no genres exist
+                            genres = artist['genres'][0] if artist['genres'] else 'unknown'
                             lyrics = get_lyrics_genius(track['name'], track['artists'][0]['name'])
                             
                             writer.writerow([
@@ -193,6 +232,7 @@ def process_playlists(playlist_type="top hits", limit=10):
                                 features['id'],
                                 track['name'],
                                 track['artists'][0]['name'],
+                                genres,
                                 features['danceability'],
                                 features['energy'],
                                 features['key'],
@@ -208,21 +248,34 @@ def process_playlists(playlist_type="top hits", limit=10):
                                 features['time_signature'],
                                 lyrics  
                             ])
-                            logging.info(f"Written to CSV: {track['name']} by {track['artists'][0]['name']} from playlist {playlist_name}")
+                            logging.info(f"Written to CSV: {track['name']} by {track['artists'][0]['name']} ({genres}) from playlist {playlist_name}")
                             break
                         except Exception as e:
                             logging.error(f"Error writing to CSV: {e}")
                             retries -= 1
                             time.sleep(5)
 
+def process_genre_list(genre_list=None, max_tracks=100):
+    """
+    Process songs for a list of genres.
+
+    Args:
+        genre_list (list): List of genres to process. If None, all genres in GENRE_MAP will be processed.
+        max_tracks (int): Maximum number of tracks to process for each genre.
+    """
+    if genre_list is None:
+        genre_list = list(GENRE_MAP.keys())
+    
+    for genre in genre_list:
+        logging.info(f"Processing {genre} songs...")
+        process_genre_songs(genre, max_tracks=max_tracks)
+
 def main():
     """
     Main execution function that processes specified genres and optionally playlists.
     """
-    # genres_to_process = ['metal', 'rock', 'electronic']
-    # for genre in genres_to_process:
-    #     logging.info(f"Processing {genre} songs...")
-    #     process_genre_songs(genre, max_tracks=100)
+    # Process genres
+    # process_genre_list(genre_list=['metal', 'rock', 'electronic'], max_tracks=100)
     
     # Process playlists
     process_playlists(playlist_type="top hits", limit=10)

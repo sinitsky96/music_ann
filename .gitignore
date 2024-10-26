@@ -1,6 +1,6 @@
 
 *.csv
-
+data/
 .cache
 
 keys.py
