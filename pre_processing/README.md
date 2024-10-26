@@ -1,6 +1,6 @@
 # Audio Features Explanation
 
-This document explains the audio features extracted from the Spotify Web API. Each feature provides unique insights into the musical and acoustic properties of tracks.
+This document explains the audio features extracted from the Spotify Web API and Genius API. Each feature provides unique insights into the musical acoustic and lyrical properties of tracks.
 
 ## Acoustic Characteristics
 
@@ -79,9 +79,25 @@ This document explains the audio features extracted from the Spotify Web API. Ea
 - Raw numerical value
 
 
-### Lyrics
+## Lyrics
+
+### Lyrics (str)
 - Lyrics of the track (from Genius API)
 
+### Language (str)
+- Language of the lyrics (from Genius API)
+
+
+## Metadata
+
+### Release Date (str)
+- Release date of the track (from Genius API)
+
+### Popularity (int)
+- The popularity is calculated by algorithm and is based, in the most part, on the total number of plays the track has had and how recent those plays are.
+Generally speaking, songs that are being played a lot now will have a higher popularity than songs that were played a lot in the past. Duplicate tracks (e.g. the same track from a single and an album) are rated independently. Artist and album popularity is derived mathematically from track popularity. 
+
+
 ---
-*Source: [Spotify Web API Documentation](https://developer.spotify.com/documentation/web-api/reference/get-audio-features)*
+*Sources: [Spotify Web API Documentation](https://developer.spotify.com/documentation/web-api/reference/get-audio-features), [Genius API Documentation](https://docs.genius.com)*
 

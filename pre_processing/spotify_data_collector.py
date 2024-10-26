@@ -153,7 +153,8 @@ def process_genre_songs(genre_key, max_tracks=100):
         writer.writerow([
             'id', 'name', 'artist', 'genre', 'danceability', 'energy', 'key', 'loudness', 
             'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 
-            'valence', 'tempo', 'duration_ms', 'time_signature', 'lyrics'
+            'valence', 'tempo', 'duration_ms', 'time_signature', 'lyrics', 'language', 
+            'release_date', 'popularity'
         ])
         
         for features in audio_features:
@@ -162,7 +163,7 @@ def process_genre_songs(genre_key, max_tracks=100):
                 while retries > 0:
                     try:
                         track = sp.track(features['id'])
-                        lyrics = get_lyrics_genius(track['name'], track['artists'][0]['name'])
+                        lyrics, language, release_date = get_lyrics_genius(track['name'], track['artists'][0]['name'])
                         
                         writer.writerow([
                             features['id'],
@@ -182,7 +183,10 @@ def process_genre_songs(genre_key, max_tracks=100):
                             features['tempo'],
                             features['duration_ms'],
                             features['time_signature'],
-                            lyrics
+                            lyrics,
+                            language,
+                            release_date,
+                            track['popularity']
                         ])
                         logging.info(f"Written to CSV: {track['name']} by {track['artists'][0]['name']}")
                         break
@@ -204,9 +208,10 @@ def process_playlists(playlist_type="top hits", limit=10):
     with open('data/playlist_songs_features.csv', mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow([
-            'playlist_name', 'track_id', 'track_name', 'artist', 'genre', 'danceability', 'energy', 'key', 
-            'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 
-            'valence', 'tempo', 'duration_ms', 'time_signature', 'lyrics'
+            'playlist_name', 'track_id', 'track_name', 'artist', 'genre', 'danceability', 
+            'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness', 
+            'instrumentalness', 'liveness', 'valence', 'tempo', 'duration_ms', 
+            'time_signature', 'lyrics', 'language', 'release_date', 'popularity'
         ])
         
         for playlist in top_playlists:
@@ -223,9 +228,8 @@ def process_playlists(playlist_type="top hits", limit=10):
                             track = sp.track(features['id'])
                             artist_id = track['artists'][0]['id']
                             artist = sp.artist(artist_id)
-                            # Take only the first genre or 'unknown' if no genres exist
                             genres = artist['genres'][0] if artist['genres'] else 'unknown'
-                            lyrics = get_lyrics_genius(track['name'], track['artists'][0]['name'])
+                            lyrics, language, release_date = get_lyrics_genius(track['name'], track['artists'][0]['name'])
                             
                             writer.writerow([
                                 playlist_name,
@@ -246,7 +250,10 @@ def process_playlists(playlist_type="top hits", limit=10):
                                 features['tempo'],
                                 features['duration_ms'],
                                 features['time_signature'],
-                                lyrics  
+                                lyrics,
+                                language,
+                                release_date,
+                                track['popularity']
                             ])
                             logging.info(f"Written to CSV: {track['name']} by {track['artists'][0]['name']} ({genres}) from playlist {playlist_name}")
                             break
