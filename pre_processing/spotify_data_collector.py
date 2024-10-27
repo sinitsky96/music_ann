@@ -165,6 +165,11 @@ def process_genre_songs(genre_key, max_tracks=100):
                         track = sp.track(features['id'])
                         lyrics, language, release_date = get_lyrics_genius(track['name'], track['artists'][0]['name'])
                         
+                        # Skip if no lyrics found
+                        if lyrics is None:
+                            logging.info(f"Skipping {track['name']} by {track['artists'][0]['name']} - No lyrics found")
+                            break
+                        
                         writer.writerow([
                             features['id'],
                             track['name'],
@@ -231,6 +236,11 @@ def process_playlists(playlist_type="top hits", limit=10):
                             genres = artist['genres'][0] if artist['genres'] else 'unknown'
                             lyrics, language, release_date = get_lyrics_genius(track['name'], track['artists'][0]['name'])
                             
+                            # Skip if no lyrics found
+                            if lyrics is None:
+                                logging.info(f"Skipping {track['name']} by {track['artists'][0]['name']} - No lyrics found")
+                                break
+                            
                             writer.writerow([
                                 playlist_name,
                                 features['id'],
@@ -285,7 +295,7 @@ def main():
     # process_genre_list(genre_list=['metal', 'rock', 'electronic'], max_tracks=100)
     
     # Process playlists
-    process_playlists(playlist_type="top hits", limit=10)
+    process_playlists(playlist_type="top hits", limit=1)
 
 if __name__ == "__main__":
     main()
