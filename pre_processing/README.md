@@ -81,8 +81,30 @@ This document explains the audio features extracted from the Spotify Web API and
 
 ## Lyrics
 
-### Lyrics (str)
-- Lyrics of the track (from Genius API)
+
+### Subject Classification (str)
+- Identifies the primary thematic subject of the song using a predefined list of subjects and spaCy to process the lyrics
+- Categories include:
+  - Love (romantic relationships, affection)
+  - Heartbreak (lost love, breakups)
+  - Family (family relationships, home)
+  - Friendship (platonic relationships, loyalty)
+  - Nostalgia (memories, past experiences)
+  - Rebellion (defiance, standing up against authority)
+  - Identity (self-discovery, personal growth)
+  - Spirituality (faith, religion, higher power)
+  - Politics (social issues, political commentary)
+  - Party (celebration, having fun)
+  - Success (achievement, triumph)
+  - Struggle (hardship, overcoming difficulties)
+  - Nature (environment, natural world)
+  - Loneliness (isolation, solitude)
+  - Hope (optimism, future possibilities)
+  - Grief (loss, mourning)
+  - Anger (rage, frustration)
+  - Freedom (liberation, independence)
+  - Dreams (aspirations, goals)
+  - Time (passage of time, mortality)
 
 ### Language (str)
 - Language of the lyrics (from Genius API)

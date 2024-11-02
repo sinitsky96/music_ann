@@ -22,3 +22,26 @@ GENRE_MAP = {
         'symphony', 'opera', 'chamber music', 'orchestral'
     ]
 }
+
+SUBJECTS = [
+    'love',           # Romantic relationships, affection
+    'heartbreak',     # Lost love, breakups
+    'family',         # Family relationships, home
+    'friendship',     # Platonic relationships, loyalty
+    'nostalgia',      # Memories, past experiences
+    'rebellion',      # Defiance, standing up against authority
+    'identity',       # Self-discovery, personal growth
+    'spirituality',   # Faith, religion, higher power
+    'politics',       # Social issues, political commentary
+    'party',          # Celebration, having fun
+    'success',        # Achievement, triumph
+    'struggle',       # Hardship, overcoming difficulties
+    'nature',         # Environment, natural world
+    'loneliness',     # Isolation, solitude
+    'hope',           # Optimism, future possibilities
+    'grief',          # Loss, mourning
+    'anger',          # Rage, frustration
+    'freedom',        # Liberation, independence
+    'dreams',         # Aspirations, goals
+    'time'            # Passage of time, mortality
+]

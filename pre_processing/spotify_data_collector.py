@@ -4,7 +4,7 @@ import csv
 import time
 import logging
 from keys import client_id, client_secret
-from constants import GENRE_MAP
+from constants import GENRE_MAP, SUBJECTS
 from lyrics_collector import get_lyrics_genius
 
 # Set up logging
@@ -163,10 +163,10 @@ def process_genre_songs(genre_key, max_tracks=100):
                 while retries > 0:
                     try:
                         track = sp.track(features['id'])
-                        lyrics, language, release_date = get_lyrics_genius(track['name'], track['artists'][0]['name'])
+                        language, release_date, subject = get_lyrics_genius(track['name'], track['artists'][0]['name'], SUBJECTS)
                         
                         # Skip if no lyrics found
-                        if lyrics is None:
+                        if subject is None:
                             logging.info(f"Skipping {track['name']} by {track['artists'][0]['name']} - No lyrics found")
                             break
                         
@@ -188,7 +188,7 @@ def process_genre_songs(genre_key, max_tracks=100):
                             features['tempo'],
                             features['duration_ms'],
                             features['time_signature'],
-                            lyrics,
+                            subject,
                             language,
                             release_date,
                             track['popularity']
@@ -216,7 +216,7 @@ def process_playlists(playlist_type="top hits", limit=10):
             'playlist_name', 'track_id', 'track_name', 'artist', 'genre', 'danceability', 
             'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness', 
             'instrumentalness', 'liveness', 'valence', 'tempo', 'duration_ms', 
-            'time_signature', 'lyrics', 'language', 'release_date', 'popularity'
+            'time_signature', 'subject', 'language', 'release_date', 'popularity'
         ])
         
         for playlist in top_playlists:
@@ -234,11 +234,11 @@ def process_playlists(playlist_type="top hits", limit=10):
                             artist_id = track['artists'][0]['id']
                             artist = sp.artist(artist_id)
                             genres = artist['genres'][0] if artist['genres'] else 'unknown'
-                            lyrics, language, release_date = get_lyrics_genius(track['name'], track['artists'][0]['name'])
+                            language, release_date, subject = get_lyrics_genius(track['name'], track['artists'][0]['name'], SUBJECTS)
                             
                             # Skip if no lyrics found
-                            if lyrics is None:
-                                logging.info(f"Skipping {track['name']} by {track['artists'][0]['name']} - No lyrics found")
+                            if subject is None:
+                                logging.info(f"Skipping {track['name']} by {track['artists'][0]['name']} - No subject found")
                                 break
                             
                             writer.writerow([
@@ -260,7 +260,7 @@ def process_playlists(playlist_type="top hits", limit=10):
                                 features['tempo'],
                                 features['duration_ms'],
                                 features['time_signature'],
-                                lyrics,
+                                subject,
                                 language,
                                 release_date,
                                 track['popularity']
@@ -292,10 +292,10 @@ def main():
     Main execution function that processes specified genres and optionally playlists.
     """
     # Process genres
-    # process_genre_list(genre_list=['metal', 'rock', 'electronic'], max_tracks=100)
+    process_genre_list(genre_list=['metal', 'rock', 'electronic'], max_tracks=100)
     
-    # Process playlists
-    process_playlists(playlist_type="top hits", limit=1)
+    # Process playlists 
+    # process_playlists(playlist_type="top hits", limit=1)
 
 if __name__ == "__main__":
     main()
