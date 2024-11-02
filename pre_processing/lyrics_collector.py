@@ -17,7 +17,7 @@ except OSError:
 
 def get_lyrics_genius(song_title, artist_name, subject_list=SUBJECTS):
     """
-    Get lyrics, language, release date, and subject using Genius API and web scraping
+    Get language, release date, and subject using Genius API and web scraping
     
     Args:
         song_title (str): The song title
@@ -25,7 +25,7 @@ def get_lyrics_genius(song_title, artist_name, subject_list=SUBJECTS):
         subject_list (list): List of predefined subjects to match against
         
     Returns:
-        tuple: (lyrics, language, release_date, subject) or (None, None, None, None) if not found
+        tuple: (language, release_date, subject) or (None, None, None) if not found
     """
     base_url = 'https://api.genius.com'
     headers = {'Authorization': f'Bearer {genius_access_token}'}

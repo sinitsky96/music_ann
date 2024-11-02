@@ -153,7 +153,7 @@ def process_genre_songs(genre_key, max_tracks=100):
         writer.writerow([
             'id', 'name', 'artist', 'genre', 'danceability', 'energy', 'key', 'loudness', 
             'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 
-            'valence', 'tempo', 'duration_ms', 'time_signature', 'lyrics', 'language', 
+            'valence', 'tempo', 'duration_ms', 'time_signature', 'subject', 'language', 
             'release_date', 'popularity'
         ])
         
