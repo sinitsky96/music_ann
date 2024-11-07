@@ -58,4 +58,4 @@ genius_access_token = "your_genius_access_token"
 - Centroid distance between playlists
 - Cosine similarity measurements
 - Average pairwise distance calculations
-- Playlist coherenc
+- Playlist coherence evaluation
