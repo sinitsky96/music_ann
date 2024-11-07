@@ -1,4 +1,4 @@
-# Music ANN (Artificial Neural Network) Playlist Generator
+# Music ANN Playlist Generator
 
 A machine learning system that generates personalized music playlists using artificial neural networks to analyze audio features, lyrics, and musical characteristics. This university project uses the Spotify API and advanced similarity metrics with FAISS indexing to create cohesive playlists that maintain consistent mood and style.
 
