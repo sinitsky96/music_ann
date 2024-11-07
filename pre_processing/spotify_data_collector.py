@@ -106,19 +106,19 @@ def get_top_playlists(query, limit=10):
 
 def get_tracks_from_playlist(playlist_id):
     """
-    Retrieve all track IDs from a Spotify playlist.
+    Retrieve track IDs from a Spotify playlist (limited to 30 tracks).
 
     Args:
         playlist_id (str): The ID of the playlist to retrieve tracks from.
         
     Returns:
-        list: A list of track IDs.
+        list: A list of track IDs (max 30).
     """
     track_ids = []
     retries = 3
     while retries > 0:
         try:
-            results = sp.playlist_tracks(playlist_id)
+            results = sp.playlist_tracks(playlist_id, limit=30)
             track_ids = [item['track']['id'] for item in results['items'] if item['track'] is not None]
             logging.info(f"Retrieved {len(track_ids)} tracks from playlist {playlist_id}.")
             break
@@ -126,7 +126,7 @@ def get_tracks_from_playlist(playlist_id):
             logging.error(f"Error retrieving tracks from playlist: {e}")
             retries -= 1
             time.sleep(5)
-    return track_ids
+    return track_ids[:30]
 
 def process_genre_songs(genre_key, max_tracks=100):
     """
@@ -292,10 +292,10 @@ def main():
     Main execution function that processes specified genres and optionally playlists.
     """
     # Process genres
-    process_genre_list(genre_list=['metal', 'rock', 'electronic'], max_tracks=100)
+    # process_genre_list(genre_list=['metal', 'rock', 'electronic'], max_tracks=100)
     
     # Process playlists 
-    # process_playlists(playlist_type="top hits", limit=1)
+    process_playlists(playlist_type="top hits", limit=10)
 
 if __name__ == "__main__":
     main()
