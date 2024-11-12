@@ -96,8 +96,15 @@ def objective(trial):
         
         # Calculate appropriate number of clusters based on dataset size
         n_data_points = len(indexer.data)
-        min_clusters = max(4, int(np.sqrt(n_data_points)))  # At least 4 clusters
-        max_clusters = min(200, int(4 * np.sqrt(n_data_points)))  # Up to 4*sqrt(N)
+        
+        # FAISS requires at least 39 training points per cluster
+        # For IVFPQ, we also need to consider the PQ centroids (256 by default)
+        min_clusters = 4
+        max_clusters = min(
+            n_data_points // 39,  # Ensure enough training points per cluster
+            int(np.sqrt(n_data_points)),  # Keep clusters reasonable for dataset size
+            32  # Set an upper limit to avoid training issues
+        )
         
         logging.info(f"Dataset size: {n_data_points}, cluster range: [{min_clusters}, {max_clusters}]")
         
@@ -108,7 +115,7 @@ def objective(trial):
     # Define index-specific parameters
     index_params = {
         'index_type': index_type,
-        'nprobe': trial.suggest_int('nprobe', 5, 20)
+        'nprobe': trial.suggest_int('nprobe', 1, max(2, max_clusters))  # Adjust nprobe range
     }
     
     # Add conditional parameters based on index type
@@ -119,12 +126,17 @@ def objective(trial):
         index_params['m'] = trial.suggest_int('m', 16, 64)
     
     if index_type == 'IVFPQ':
-        # Ensure n_pq divides n_components evenly
-        possible_n_pq = [n for n in [8, 16] if n_components % n == 0]
-        if not possible_n_pq:
-            logging.warning(f"No valid n_pq values for n_components={n_components}, skipping trial")
-            return float('inf')
-        index_params['n_pq'] = trial.suggest_categorical('n_pq', possible_n_pq)
+        # For small datasets, use smaller PQ sizes
+        if n_data_points < 1000:
+            possible_n_pq = [4, 8]  # Smaller PQ sizes for small datasets
+        else:
+            possible_n_pq = [8, 16]
+        
+        possible_n_pq = [n for n in possible_n_pq if n_components % n == 0]
+        if possible_n_pq:
+            index_params['n_pq'] = trial.suggest_categorical('n_pq', possible_n_pq)
+        else:
+            return float('-inf')  # Skip invalid configurations
     
     # Create FAISS index
     try:
@@ -157,8 +169,8 @@ def objective(trial):
         avg_similarity = total_similarity / n_pairs
         logging.info(f"Average similarity score: {avg_similarity}")
         
-        # Return negative similarity for minimization
-        return -avg_similarity
+        # Return similarity for maximization
+        return avg_similarity
     
     except Exception as e:
         logging.error(f"Playlist generation or similarity calculation failed: {str(e)}")
@@ -169,13 +181,13 @@ def main():
     # Create study with timestamped database
     study = optuna.create_study(
         study_name=f"playlist_optimization_{timestamp}",
-        direction="minimize",
+        direction="maximize",
         storage=f"sqlite:///{study_db}",
         load_if_exists=True
     )
     
     # Run optimization
-    n_trials = 50
+    n_trials = 200
     logging.info(f"Starting optimization with {n_trials} trials")
     
     try:
@@ -187,7 +199,7 @@ def main():
         logging.info("\nBest trial:")
         trial = study.best_trial
         
-        logging.info(f"  Value: {-trial.value}")  # Negative because we minimized
+        logging.info(f"  Value: {trial.value}")
         logging.info("  Params:")
         for key, value in trial.params.items():
             logging.info(f"    {key}: {value}")
@@ -196,7 +208,7 @@ def main():
         with open(results_file, 'w') as f:
             f.write("=== Optimization Results ===\n")
             f.write(f"Optimization completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
-            f.write(f"Best value: {-trial.value}\n")
+            f.write(f"Best value: {trial.value}\n")
             f.write("Best parameters:\n")
             for key, value in trial.params.items():
                 f.write(f"  {key}: {value}\n")
@@ -215,7 +227,6 @@ def main():
             f.write(f"Log file: {log_file}\n")
         
         logging.info(f"Results saved to: {results_file}")
-        
     except Exception as e:
         logging.error(f"Optimization failed: {str(e)}")
         raise
