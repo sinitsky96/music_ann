@@ -7,3 +7,4 @@ keys.py
 
 *.pyc
 /Eval/test.py
+Eval/optuna_logs/
