@@ -23,9 +23,9 @@ The system follows a pipeline approach:
 
 **API Configuration**
 Create a `keys.py` file with:
-client_id = "your_spotify_client_id"
-client_secret = "your_spotify_client_secret"
-genius_access_token = "your_genius_access_token"
+- `client_id = "your_spotify_client_id"`
+- `client_secret = "your_spotify_client_secret"`
+- `genius_access_token = "your_genius_access_token"`
 
 
 ## Key Features
@@ -47,6 +47,16 @@ genius_access_token = "your_genius_access_token"
 - Implements IVF (Inverted File Index) for fast approximate nearest neighbor search
 - Reduces high-dimensional song features to optimized search vectors
 - Enables quick retrieval of similar songs from millions of entries
+
+### Hyperparameter Optimization
+- Uses Optuna for automated hyperparameter tuning
+- Optimizes FAISS index configurations for better similarity search
+- Tunes parameters like:
+  - Number of components for dimensionality reduction
+  - Index types (FlatL2, FlatIP, HNSWFlat, IVFFlat, IVFPQ)
+  - Number of clusters and probe points
+  - Product quantization parameters
+- Logs optimization results and performance metrics
 
 ### Playlist Generation
 - ANN-based similarity matching
