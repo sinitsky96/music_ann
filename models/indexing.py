@@ -160,7 +160,7 @@ if __name__ == "__main__":
     features = [
         'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness',
         'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo',
-        'duration_ms', 'time_signature'
+        'duration_ms', 'time_signature','subject','language','popularity'
     ]
     
     test_indices('data/rock_songs_features.csv', features)
