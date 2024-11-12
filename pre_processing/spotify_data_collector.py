@@ -292,7 +292,7 @@ def main():
     Main execution function that processes specified genres and optionally playlists.
     """
     # Process genres
-    # process_genre_list(genre_list=['metal', 'rock', 'electronic'], max_tracks=100)
+    # process_genre_list(genre_list=['metal', 'rock', 'rap','pop',jazz'], max_tracks=1000000)
     
     # Process playlists 
     process_playlists(playlist_type="top hits", limit=10)
